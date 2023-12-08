@@ -1,50 +1,47 @@
-CREATE TABLE "User" (
-  "UserID" int PRIMARY KEY,
-  "Name" varchar(255),
-  "Email" varchar(255) UNIQUE,
-  "Password" varchar(255)
+DROP TABLE IF EXISTS property_review CASCADE;
+DROP TABLE IF EXISTS reservation CASCADE;
+DROP TABLE IF EXISTS property CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+CREATE TABLE users (
+  user_id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE "Property" (
-  "PropertyID" int PRIMARY KEY,
-  "OwnerID" int,
-  "Title" varchar(255),
-  "Description" text,
-  "CostPerNight" decimal,
-  "ParkingSpaces" int,
-  "NumberOfBathrooms" int,
-  "NumberOfBedrooms" int,
-  "ThumbnailURL" varchar(255),
-  "CoverPhotoURL" varchar(255),
-  "Country" varchar(255),
-  "Street" varchar(255),
-  "City" varchar(255),
-  "Province" varchar(255),
-  "PostCode" varchar(255),
-  "IsActive" boolean
+CREATE TABLE property (
+  property_id SERIAL PRIMARY KEY,
+  owner_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  cost_per_night DECIMAL,
+  parking_spaces INTEGER,
+  number_of_bathrooms INTEGER,
+  number_of_bedrooms INTEGER,
+  thumbnail_url VARCHAR(255),
+  cover_photo_url VARCHAR(255),
+  country VARCHAR(255) NOT NULL,
+  street VARCHAR(255) NOT NULL,
+  city VARCHAR(255) NOT NULL,
+  province VARCHAR(255) NOT NULL,
+  post_code VARCHAR(255) NOT NULL,
+  is_active BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "Reservation" (
-  "ReservationID" int PRIMARY KEY,
-  "GuestID" int,
-  "PropertyID" int,
-  "StartDate" date,
-  "EndDate" date
+CREATE TABLE reservation (
+  reservation_id SERIAL PRIMARY KEY,
+  guest_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+  property_id INTEGER REFERENCES property(property_id) ON DELETE CASCADE,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL
 );
 
-CREATE TABLE "PropertyReview" (
-  "ReviewID" int PRIMARY KEY,
-  "ReservationID" int,
-  "Message" text,
-  "Rating" int
+CREATE TABLE property_review (
+  review_id SERIAL PRIMARY KEY,
+  reservation_id INTEGER REFERENCES reservation(reservation_id) ON DELETE CASCADE,
+  message TEXT,
+  rating INTEGER CHECK (rating >= 1 AND rating <= 5)
 );
 
-COMMENT ON COLUMN "PropertyReview"."Rating" IS 'Rating must be between 1 and 5';
-
-ALTER TABLE "Property" ADD FOREIGN KEY ("OwnerID") REFERENCES "User" ("UserID");
-
-ALTER TABLE "Reservation" ADD FOREIGN KEY ("GuestID") REFERENCES "User" ("UserID");
-
-ALTER TABLE "Reservation" ADD FOREIGN KEY ("PropertyID") REFERENCES "Property" ("PropertyID");
-
-ALTER TABLE "PropertyReview" ADD FOREIGN KEY ("ReservationID") REFERENCES "Reservation" ("ReservationID");
+COMMENT ON COLUMN property_review.rating IS 'Rating must be between 1 and 5';

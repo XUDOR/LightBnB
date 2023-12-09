@@ -1,5 +1,13 @@
-const properties = require("./json/properties.json");
-const users = require("./json/users.json");
+const { Pool } = require('pg');
+
+// Set up your database connection information
+const pool = new Pool({
+  user: 'vagrant',
+  password: '123',
+  host: 'localhost',
+  database: 'lightbnb'
+});
+
 
 /// Users
 
@@ -59,12 +67,30 @@ const getAllReservations = function (guest_id, limit = 10) {
  * @param {*} limit The number of results to return.
  * @return {Promise<[{}]>}  A promise to the properties.
  */
-const getAllProperties = function (options, limit = 10) {
-  const limitedProperties = {};
-  for (let i = 1; i <= limit; i++) {
-    limitedProperties[i] = properties[i];
-  }
-  return Promise.resolve(limitedProperties);
+
+
+const getAllProperties = (options, limit = 10) => {
+  // SQL query to select all columns from properties and limit the number of responses
+  const queryString = `
+    SELECT * 
+    FROM properties
+    LIMIT $1
+  `;
+
+  // Array of values to use in the SQL query
+  const queryParams = [limit];
+
+  // Executing the query
+  return pool
+    .query(queryString, queryParams)
+    .then((result) => {
+      console.log(result.rows);
+      return result.rows; // Return the rows from the query
+    })
+    .catch((err) => {
+      console.log(err.message);
+      return err.message;
+    });
 };
 
 /**

@@ -56,6 +56,7 @@ $(() => {
   });
   $("header").on("click", '.my_listing_button', function() {
     propertyListings.clearListings();
+    console.log(currentUser);
     getAllListings(`owner_id=${currentUser.id}`)
       .then(function(json) {
         propertyListings.addProperties(json.properties);

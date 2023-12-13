@@ -34,13 +34,13 @@ router.post("/login", (req, res) => {
     if (!bcrypt.compareSync(password, user.password)) {
       return res.send({ error: "error" });
     }
-
-    req.session.userId = user.id;
+    console.log(user);
+    req.session.userId = user.user_id;
     res.send({
       user: {
         name: user.name,
         email: user.email,
-        id: user.id,
+        id: user.user_id,
       },
     });
   });
@@ -58,7 +58,7 @@ router.get("/me", (req, res) => {
   if (!userId) {
     return res.send({ message: "not logged in" });
   }
-
+    console.log(userId);
   database
     .getUserWithId(userId)
     .then((user) => {

@@ -32,7 +32,7 @@ const getUserWithEmail = function(email) {
  * @return {Promise<{}>} A promise to the user.
  */
 const getUserWithId = function(id) {
-  const queryString = `SELECT * FROM users WHERE id = $1`;
+  const queryString = `SELECT * FROM users WHERE user_id = $1`;
   const values = [id];
   
   return pool.query(queryString, values)
@@ -110,7 +110,7 @@ const getAllProperties = (options, limit = 10) => {
     queryParams.push(`%${options.city}%`);
     queryString += `WHERE city LIKE $${queryParams.length} `;
   }
-
+  console.log(options);
   if (options.owner_id) {
     queryParams.push(options.owner_id);
     queryString += `${queryParams.length === 1 ? 'WHERE' : 'AND'} owner_id = $${queryParams.length} `;

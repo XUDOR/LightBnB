@@ -7,3 +7,6 @@ const limit = 5; // Or any number you prefer
 db.getAllReservations(testUserId, limit)
   .then(reservations => console.log(reservations))
   .catch(err => console.error(err));
+
+
+  

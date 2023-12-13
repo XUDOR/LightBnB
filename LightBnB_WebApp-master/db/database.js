@@ -100,10 +100,11 @@ const getAllReservations = function (guest_id, limit = 10) {
 const getAllProperties = (options, limit = 10) => {
   const queryParams = [];
   let queryString = `
-    SELECT properties.*, avg(property_reviews.rating) as average_rating
-    FROM properties
-    JOIN property_reviews ON properties.id = property_reviews.property_id
-  `;
+  SELECT properties.*, avg(property_reviews.rating) as average_rating
+  FROM properties
+  JOIN property_reviews ON properties.property_id = property_reviews.property_id
+`;
+
 
   if (options.city) {
     queryParams.push(`%${options.city}%`);
@@ -128,10 +129,10 @@ const getAllProperties = (options, limit = 10) => {
 
   queryParams.push(limit);
   queryString += `
-    GROUP BY properties.id
-    ORDER BY cost_per_night
-    LIMIT $${queryParams.length};
-  `;
+  GROUP BY properties.property_id
+  ORDER BY cost_per_night
+  LIMIT $${queryParams.length};
+`;
 
   console.log(queryString, queryParams);
 
